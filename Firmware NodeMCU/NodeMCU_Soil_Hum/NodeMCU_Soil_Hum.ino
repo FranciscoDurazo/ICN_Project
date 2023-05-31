@@ -1,5 +1,4 @@
 #include <ESP8266WiFi.h>
-#include "DHTesp.h"
 #include <FirebaseESP8266.h>
 
 #include <addons/TokenHelper.h>
@@ -10,8 +9,8 @@
 #define WIFI_PASSWORD "123456789"
 
 //FireBase
-#define API_KEY "AIzaSyBOafPFq7K0anVty-puKq5QSZ7hwGMlBJQ"
-#define DATABASE_URL "https://proyectoprueba-8e29a-default-rtdb.firebaseio.com"
+#define API_KEY "AIzaSyDoY2Gis3VJPMoKTYS8iqPS6nqIkPRy0x8"
+#define DATABASE_URL "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/"
 
 #define USER_EMAIL "espuser@mail.com"
 #define USER_PASSWORD "esppassword"
@@ -22,22 +21,11 @@ FirebaseAuth auth;
 FirebaseConfig config;
 
 //Declaring Initial Variables
-float TempSense = 0;
-float HumSense = 0;
-int RandTemp = 0;
-int count2 = 0;
-uint8_t k = 0; 
-bool bVal, Salida;
-DHTesp dht;
-String baseDataT = "/lectura/temperatura/temp";
-String baseDataH = "/lectura/humedad/hum";
-String baseData = "/random/lectura";
-String sensorValueT; //numero de sensor
+String DataH = "/Soil_Humidity"; 
 String sensorValueH; //numero de sensor 
-String sensorValue; //numero de sensor 
 unsigned long sendDataPrevMillis = 0;
-unsigned long count = 0;
-
+const int sensor_pin = 0;
+float moisture_percentage;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -70,41 +58,18 @@ void setup() {
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
   Firebase.setDoubleDigits(5);
-
-  dht.setup(D5,DHTesp::DHT11);
 }
 
 void loop() {
   if (Firebase.ready() && (millis() - sendDataPrevMillis > 1000 || sendDataPrevMillis == 0))
   {
-    RandTemp = random(20,30);
-    TempSense = dht.getTemperature();
-    HumSense = dht.getHumidity();
-
+    moisture_percentage = ( 100.00 - ( (analogRead(sensor_pin)/1023) * 100.00 ) );
     sendDataPrevMillis = millis(); //Hora en Milisegundos 
     
-    sensorValueT = baseDataT + count; //concatenando el número de lectura que es
-    sensorValueH = baseDataH + count; //concatenando el número de lectura que es
-    sensorValue = baseData + count2; //concatenando el número de lectura que es
-
-    k++;
-    if(k >= 2){
-      Serial.printf("Set Temp Random... %s",Firebase.setInt(fbdo,sensorValue,RandTemp)?"ok": fbdo.errorReason().c_str());//%s -> Agregando string
-      Serial.println(" ");
-      count2++;
-      k = 0;
-    }
-    
-    Serial.printf("Set Temps... %s",Firebase.setFloat(fbdo, sensorValueT, TempSense)?"ok": fbdo.errorReason().c_str());//%s -> Agregando string
+    sensorValueH = DataH; //concatenando el número de lectura que es
+    Serial.printf("Set Soil Hums... %s",Firebase.setFloat(fbdo, sensorValueH, moisture_percentage)?"ok": fbdo.errorReason().c_str());//%s -> Agregando string
+    Serial.println(analogRead(0));
+    Serial.println(moisture_percentage);
     Serial.println(" ");
-    Serial.printf("Set Hums... %s",Firebase.setFloat(fbdo, sensorValueH, HumSense)?"ok": fbdo.errorReason().c_str());//%s -> Agregando string
-    Serial.println(" ");
-    
-    /*Serial.printf("Get Outputs ref... %s\n", Firebase.RTDB.getBool(&fbdo, "salidas/relay1", &bVal) ? bVal ? "true" : "false" : fbdo.errorReason().c_str());
-    Serial.println(" ");
-    Salida = Firebase.RTDB.getBool(&fbdo, "salidas/relay1", &bVal);
-    //Serial.println(Salida);*/
-    
-    count++;
   }
 }
