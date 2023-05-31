@@ -11,6 +11,9 @@ from openpyxl import Workbook
 plt.switch_backend('agg')
 app = Flask(__name__, template_folder="./pages")
 # flag = False
+# databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Control_Out.json"
+# control = requests.get(databaseURL)
+# control = control.json()
 
 @app.route("/")
 def index():
@@ -20,16 +23,61 @@ def index():
     hum = requests.get(databaseURL).content.decode("utf-8")
     databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Soil_Humidity.json"
     soil_hum = requests.get(databaseURL).content.decode("utf-8")
+    databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Control_Out.json"
+    control = requests.get(databaseURL)
+    control = control.json()
 
     temp = float(temp[1:(len(temp)-1)]) #removing " "
     hum = float(hum[1:(len(hum)-1)]) #  removing " "
     soil_hum = float(soil_hum[1:(len(soil_hum)-1)]) #removing " "
+    
+    x_labels = ['Soil_Humidity', 'Air_Humidity']  # Labels for the x-axis
+    y_values_1 = hum  # Y-axis values for the first bar
+    y_values_2 = soil_hum    # Y-axis values for the second bar
+    y_values_3 = temp
+    bar_width = 0.4  # Width of each bar0
+    index = range(len(x_labels))  # Positions of the bars on the x-axis
+    fig, ax = plt.subplots()
 
+    ax.bar(0, y_values_1, bar_width, color='steelblue')
+    ax.bar(1, y_values_2, bar_width, color='steelblue')
+    y_min = 0  # Minimum value for the Y-axis
+    y_max = 100  # Maximum value for the Y-axis
+    ax.set_ylim([y_min, y_max])
+
+    ax.set_xlabel('Variable')
+    ax.set_ylabel('Measured Value')
+    ax.set_title('Humidity')
+    ax.set_xticks(index)
+    ax.set_xticklabels(x_labels)
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig('static/Humidity.png')
+    ###########
+    plt.clf()
+    fig, ax = plt.subplots()
+
+    ax.bar(0, y_values_3, bar_width, color='steelblue', align= "center")
+    y_min = 0  # Minimum value for the Y-axis
+    y_max = 60  # Maximum value for the Y-axis
+    ax.set_ylim([y_min, y_max])
+
+    ax.set_xlabel('Variable')
+    ax.set_ylabel('Measured Value °C')
+    ax.set_title('Temperature')
+    ax.set_xticks([0, 1])
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig('static/Temperature.png')
     # print(temp)
     # print(hum)
     # print(soil_hum)
     # print(Control)
-    return render_template("index.html")
+    if control:
+        out = "Encendido"
+    else:
+        out = "Apagado"
+    return render_template("index.html",salida = out)
 
 @app.route('/Toggle_Output', methods = ['POST'])
 def Toggle_Output():
@@ -37,64 +85,13 @@ def Toggle_Output():
     control = requests.get(databaseURL)
     control = control.json()
     r = requests.put(databaseURL,json = not control)
-    return render_template("index.html")
-
-
-
-
-@app.route("/tabular")
-def tabular():
-    #return render_template("index.html")
-    databaseURL = "https://proyectoprueba-8e29a-default-rtdb.firebaseio.com/random.json"
-    random = requests.get(databaseURL).content.decode("utf-8")
-    databaseURL = "https://proyectoprueba-8e29a-default-rtdb.firebaseio.com/lectura/humedad.json"
-    realesh = requests.get(databaseURL).content.decode("utf-8")
-    databaseURL = "https://proyectoprueba-8e29a-default-rtdb.firebaseio.com/lectura/temperatura.json"
-    realest = requests.get(databaseURL).content.decode("utf-8")
-    
-    random = random[1:(len(random)-1)] #quitando llaves  
-    random = random.split(',')
-    for row in range(len(random)):
-        random[row] = random[row].split(':')
-        random[row][0] = random[row][0][1:(len(random[row][0])-1)]
-        random[row][0] = random[row][0][7:]
-        random[row][0] = int(random[row][0])
-        random[row][1] = float(random[row][1])
-    random = np.array(random)
-    idx = np.argsort(random[:, 0])
-    random = random[idx]
-    #print(random)
-    
-    realesh = realesh[1:(len(realesh)-1)] #quitando llaves  
-    realesh = realesh.split(',')
-    for row in range(len(realesh)):
-        realesh[row] = realesh[row].split(':')
-        realesh[row][0] = realesh[row][0][1:(len(realesh[row][0])-1)]
-        realesh[row][0] = realesh[row][0][3:]
-        realesh[row][0] = int(realesh[row][0])
-        realesh[row][1] = float(realesh[row][1])
-    realesh = np.array(realesh)
-    idx = np.argsort(realesh[:, 0])
-    realesh = realesh[idx]
-    #print(realesh)
-    realest = realest[1:(len(realest)-1)] #quitando llaves  
-    realest = realest.split(',')
-    for row in range(len(realest)):
-        realest[row] = realest[row].split(':')
-        realest[row][0] = realest[row][0][1:(len(realest[row][0])-1)]
-        realest[row][0] = realest[row][0][4:]
-        realest[row][0] = int(realest[row][0])
-        realest[row][1] = float(realest[row][1])
-    realest = np.array(realest)
-    idx = np.argsort(realest[:, 0])
-    realest = realest[idx]
-
-    pd.DataFrame(random).to_excel("static/Valores_Simulados.xlsx",sheet_name="Datos_Simulados",header=["no.Lec","Valor"],index=False)
-    
-    pd.DataFrame(realest).to_excel("static/Temperatura.xlsx",sheet_name="Lecturas_Temperatura",header=["no.Lec","Valor"],index=False)
-    
-    pd.DataFrame(realesh).to_excel("static/Humedad.xlsx",sheet_name="Lecturas_Humedad",header=["no.Lec","Valor"],index=False)
-    return render_template("tabular.html")
+    if control:
+        out = "Encendido"
+    else:
+        out = "Apagado"
+        
+    #index()
+    return render_template("index.html",salida = out)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

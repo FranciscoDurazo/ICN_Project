@@ -7,9 +7,17 @@
     <title>Document</title>
 </head>
 <body>
-    <p>Holi</p>
+    <h1>Grafica de datos de humedad</h1>
+    <img src="/static/Humidity.png">
+    <h1>Grafica de datos de Temperatura</h1>
+    <img src="/static/Temperature.png">
+     
+    <h1>Estado actual de salida</h1>
+    <h2>{{salida}}</h2>
     <form action="/Toggle_Output" method="POST">
         <button type="submit">Toggle_Output</button>
     </form>
+    <button onclick="location.href = '/'">Refresh</button>
+    
 </body>
 </html>
