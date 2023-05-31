@@ -10,7 +10,7 @@ from openpyxl import Workbook
 
 plt.switch_backend('agg')
 app = Flask(__name__, template_folder="./pages")
-flag = False
+# flag = False
 
 @app.route("/")
 def index():
@@ -20,9 +20,7 @@ def index():
     hum = requests.get(databaseURL).content.decode("utf-8")
     databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Soil_Humidity.json"
     soil_hum = requests.get(databaseURL).content.decode("utf-8")
-    databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Control_Out.json"
-    
-    r = requests.put(databaseURL,json=True) #necesary put toggle button
+
     temp = float(temp[1:(len(temp)-1)]) #removing " "
     hum = float(hum[1:(len(hum)-1)]) #  removing " "
     soil_hum = float(soil_hum[1:(len(soil_hum)-1)]) #removing " "
@@ -32,6 +30,21 @@ def index():
     # print(soil_hum)
     # print(Control)
     return render_template("index.html")
+
+@app.route('/Toggle_Output', methods = ['POST'])
+def Toggle_Output():
+    databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Control_Out.json"
+    control = requests.get(databaseURL)
+    control = control.json()
+    #print("Se logró")
+    # print(control)
+    # print(type(control))
+    r = requests.put(databaseURL,json = not control) #necesary put toggle button
+    return render_template("index.html")
+
+
+
+
 
 @app.route("/tabular")
 def tabular():
