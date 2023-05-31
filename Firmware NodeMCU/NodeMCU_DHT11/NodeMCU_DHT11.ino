@@ -10,8 +10,8 @@
 #define WIFI_PASSWORD "123456789"
 
 //FireBase
-#define API_KEY "AIzaSyBOafPFq7K0anVty-puKq5QSZ7hwGMlBJQ"
-#define DATABASE_URL "https://proyectoprueba-8e29a-default-rtdb.firebaseio.com"
+#define API_KEY "AIzaSyDoY2Gis3VJPMoKTYS8iqPS6nqIkPRy0x8"
+#define DATABASE_URL "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/"
 
 #define USER_EMAIL "espuser@mail.com"
 #define USER_PASSWORD "esppassword"
@@ -29,12 +29,10 @@ int count2 = 0;
 uint8_t k = 0; 
 bool bVal, Salida;
 DHTesp dht;
-String baseDataT = "/lectura/temperatura/temp";
-String baseDataH = "/lectura/humedad/hum";
-String baseData = "/random/lectura";
-String sensorValueT; //numero de sensor
+String DataT = "/Air_Temperature";
+String DataH = "/Air_Humidity"; 
+String sensorValueT; //numero de sensor 
 String sensorValueH; //numero de sensor 
-String sensorValue; //numero de sensor 
 unsigned long sendDataPrevMillis = 0;
 unsigned long count = 0;
 
@@ -77,34 +75,17 @@ void setup() {
 void loop() {
   if (Firebase.ready() && (millis() - sendDataPrevMillis > 1000 || sendDataPrevMillis == 0))
   {
-    RandTemp = random(20,30);
     TempSense = dht.getTemperature();
     HumSense = dht.getHumidity();
 
     sendDataPrevMillis = millis(); //Hora en Milisegundos 
     
-    sensorValueT = baseDataT + count; //concatenando el número de lectura que es
-    sensorValueH = baseDataH + count; //concatenando el número de lectura que es
-    sensorValue = baseData + count2; //concatenando el número de lectura que es
-
-    k++;
-    if(k >= 2){
-      Serial.printf("Set Temp Random... %s",Firebase.setInt(fbdo,sensorValue,RandTemp)?"ok": fbdo.errorReason().c_str());//%s -> Agregando string
-      Serial.println(" ");
-      count2++;
-      k = 0;
-    }
+    sensorValueT = DataT; //concatenando el número de lectura que es
+    sensorValueH = DataH; //concatenando el número de lectura que es
     
     Serial.printf("Set Temps... %s",Firebase.setFloat(fbdo, sensorValueT, TempSense)?"ok": fbdo.errorReason().c_str());//%s -> Agregando string
     Serial.println(" ");
     Serial.printf("Set Hums... %s",Firebase.setFloat(fbdo, sensorValueH, HumSense)?"ok": fbdo.errorReason().c_str());//%s -> Agregando string
     Serial.println(" ");
-    
-    /*Serial.printf("Get Outputs ref... %s\n", Firebase.RTDB.getBool(&fbdo, "salidas/relay1", &bVal) ? bVal ? "true" : "false" : fbdo.errorReason().c_str());
-    Serial.println(" ");
-    Salida = Firebase.RTDB.getBool(&fbdo, "salidas/relay1", &bVal);
-    //Serial.println(Salida);*/
-    
-    count++;
   }
 }

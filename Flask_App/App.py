@@ -15,17 +15,26 @@ app = Flask(__name__, template_folder="./pages")
 def index():
     databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Air_Temperature.json"
     temp = requests.get(databaseURL).content.decode("utf-8")
+    temp = requests.get(databaseURL)
+    temp = temp.json()
+    
     databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Air_Humidity.json"
     hum = requests.get(databaseURL).content.decode("utf-8")
+    hum = requests.get(databaseURL)
+    hum = hum.json()
+    hum = float(hum)
     databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Soil_Humidity.json"
     soil_hum = requests.get(databaseURL).content.decode("utf-8")
+    soil_hum = requests.get(databaseURL)
+    soil_hum = soil_hum.json()
+    soil_hum = float(soil_hum)
     databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Control_Out.json"
     control = requests.get(databaseURL)
     control = control.json()
 
-    temp = float(temp[1:(len(temp)-1)]) #removing " "
-    hum = float(hum[1:(len(hum)-1)]) #  removing " "
-    soil_hum = float(soil_hum[1:(len(soil_hum)-1)]) #removing " "
+    # temp = float(temp[1:(len(temp)-1)]) #removing " "
+    # hum = float(hum[1:(len(hum)-1)]) #  removing " "
+    # soil_hum = float(soil_hum[1:(len(soil_hum)-1)]) #removing " "
     
     x_labels = ['Soil_Humidity', 'Air_Humidity']  # Labels for the x-axis
     y_values_1 = hum  # Y-axis values for the first bar
@@ -35,8 +44,8 @@ def index():
     index = range(len(x_labels))  # Positions of the bars on the x-axis
     fig, ax = plt.subplots()
 
-    ax.bar(0, y_values_1, bar_width, color='steelblue')
-    ax.bar(1, y_values_2, bar_width, color='steelblue')
+    ax.bar(0, y_values_2, bar_width, color='steelblue')
+    ax.bar(1, y_values_1, bar_width, color='steelblue')
     y_min = 0  # Minimum value for the Y-axis
     y_max = 100  # Maximum value for the Y-axis
     ax.set_ylim([y_min, y_max])
