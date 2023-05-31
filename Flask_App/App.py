@@ -1,6 +1,6 @@
 #import flask
 import numpy as np
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import requests
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -10,7 +10,7 @@ from openpyxl import Workbook
 
 plt.switch_backend('agg')
 app = Flask(__name__, template_folder="./pages")
-
+flag = False
 
 @app.route("/")
 def index():
@@ -20,13 +20,17 @@ def index():
     hum = requests.get(databaseURL).content.decode("utf-8")
     databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Soil_Humidity.json"
     soil_hum = requests.get(databaseURL).content.decode("utf-8")
+    databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Control_Out.json"
+    
+    r = requests.put(databaseURL,json=True) #necesary put toggle button
     temp = float(temp[1:(len(temp)-1)]) #removing " "
-    hum = float(hum[1:(len(hum)-1)]) #removing " "
+    hum = float(hum[1:(len(hum)-1)]) #  removing " "
     soil_hum = float(soil_hum[1:(len(soil_hum)-1)]) #removing " "
 
     # print(temp)
     # print(hum)
     # print(soil_hum)
+    # print(Control)
     return render_template("index.html")
 
 @app.route("/tabular")
