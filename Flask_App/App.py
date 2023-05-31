@@ -10,10 +10,6 @@ from openpyxl import Workbook
 
 plt.switch_backend('agg')
 app = Flask(__name__, template_folder="./pages")
-# flag = False
-# databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Control_Out.json"
-# control = requests.get(databaseURL)
-# control = control.json()
 
 @app.route("/")
 def index():
@@ -69,10 +65,6 @@ def index():
     ax.legend()
     plt.tight_layout()
     plt.savefig('static/Temperature.png')
-    # print(temp)
-    # print(hum)
-    # print(soil_hum)
-    # print(Control)
     if control:
         out = "Encendido"
     else:
