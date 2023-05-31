@@ -14,6 +14,19 @@ app = Flask(__name__, template_folder="./pages")
 
 @app.route("/")
 def index():
+    databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Air_Temperature.json"
+    temp = requests.get(databaseURL).content.decode("utf-8")
+    databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Air_Humidity.json"
+    hum = requests.get(databaseURL).content.decode("utf-8")
+    databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Soil_Humidity.json"
+    soil_hum = requests.get(databaseURL).content.decode("utf-8")
+    temp = float(temp[1:(len(temp)-1)]) #removing " "
+    hum = float(hum[1:(len(hum)-1)]) #removing " "
+    soil_hum = float(soil_hum[1:(len(soil_hum)-1)]) #removing " "
+
+    # print(temp)
+    # print(hum)
+    # print(soil_hum)
     return render_template("index.html")
 
 @app.route("/tabular")
