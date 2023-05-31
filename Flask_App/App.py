@@ -36,12 +36,8 @@ def Toggle_Output():
     databaseURL = "https://proyecto-final-8bdcf-default-rtdb.firebaseio.com/Control_Out.json"
     control = requests.get(databaseURL)
     control = control.json()
-    #print("Se logró")
-    # print(control)
-    # print(type(control))
-    r = requests.put(databaseURL,json = not control) #necesary put toggle button
+    r = requests.put(databaseURL,json = not control)
     return render_template("index.html")
-
 
 
 
