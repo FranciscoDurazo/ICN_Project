@@ -6,8 +6,8 @@
 #include <addons/RTDBHelper.h> 
 
 //WiFi
-#define WIFI_SSID "WiFi_Pancho"
-#define WIFI_PASSWORD "123456789"
+#define WIFI_SSID "OG"
+#define WIFI_PASSWORD "12345678"
 
 //FireBase
 #define API_KEY "AIzaSyDoY2Gis3VJPMoKTYS8iqPS6nqIkPRy0x8"
