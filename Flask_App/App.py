@@ -1,11 +1,8 @@
 #import flask
-import numpy as np
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 import requests
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
-from openpyxl import Workbook
 
 
 plt.switch_backend('agg')
